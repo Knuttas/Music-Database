@@ -2,7 +2,6 @@
 from database import run, get
 
 """
-# create a user
 run('''
   INSERT INTO artists VALUES(NULL, 'Slayer', 'Best Metal band ever, no discussion!')
 ''')

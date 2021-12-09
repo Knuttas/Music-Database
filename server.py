@@ -45,8 +45,25 @@ def add_artist():
 @app.post('/submit-artist')
 def submit_artist():
   artist = dict(request.form)
-  print(artist)
+  artist_name = artist['name']
+  artist_description = artist['description']
+  run(f'INSERT INTO artists VALUES (NULL, "{artist_name}", "{artist_description}")')
   return redirect('/')
+
+@app.get('/remove-artist')
+def remove_artist():
+  return render_template('remove-artist.html')
+
+@app.post('/submit-artist-remove')
+def submit_artist_remove():
+  remove = dict(request.form)
+  remove = remove['name']
+  run(f'DELETE FROM artists WHERE artists.name = "{remove}"')
+  return redirect('/')
+
+@app.get('/add-album')
+def add_album():
+  return render_template('add-album.html')
 
 # example: localhost:5000/user/3
 @app.get('/artist/<int:id>')

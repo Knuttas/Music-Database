@@ -65,16 +65,64 @@ def submit_artist_remove():
 def add_album():
   return render_template('add-album.html')
 
-# example: localhost:5000/user/3
-@app.get('/artist/<int:id>')
-def get_artist_by_id(id):
-  # get select and filter with 'id' parameter
-  artists = get('SELECT * FROM artists WHERE id = :id', { 'id': id })
+@app.post('/submit-album')
+def submit_album():
+  album = dict(request.form)
+  album_artist = album['artist']
+  album_title = album['title']
+  album_description = album['description']
+  album_release = album['release']
+  existing_artists = get(f'SELECT name, id FROM artists WHERE artists.name = "{album_artist}"')
+  if (existing_artists):
+    existing_artists = [dict(existing_artists) for existing_artists in existing_artists]
+    jsonify(existing_artists)
+    existing_artists_id = existing_artists[0]['id']
+    run(f'INSERT INTO albums VALUES (NULL, "{album_title}", "{album_description}", {album_release}, {existing_artists_id})')
+    return redirect('/')
+  else:
+    return render_template('/error-artist.html')
 
-  # get() always returns a list, 
-  # even if there's only 1 row
-  return jsonify(dict(artists[0]))
+@app.get('/remove-album')
+def remove_album():
+  return render_template('remove-album.html')
 
+@app.post('/submit-album-remove')
+def submit_album_remove():
+  remove = dict(request.form)
+  remove = remove['name']
+  run(f'DELETE FROM albums WHERE albums.title = "{remove}"')
+  return redirect('/')
+
+@app.get('/add-song')
+def add_song():
+  return render_template('add-song.html')
+
+@app.post('/submit-song')
+def submit_song():
+  song = dict(request.form)
+  song_album = song['album']
+  song_title = song['title']
+  song_duration = song['duration']
+  existing_album = get(f'SELECT title, id FROM albums WHERE albums.title = "{song_album}"')
+  if (existing_album):
+    existing_album = [dict(existing_album) for existing_album in existing_album]
+    jsonify(existing_album)
+    existing_album_id = existing_album[0]['id']
+    run(f'INSERT INTO songs VALUES (NULL, "{song_title}", {song_duration}, {existing_album_id})')
+    return redirect('/')
+  else:
+    return render_template('/error-album.html')
+
+@app.get('/remove-song')
+def remove_song():
+  return render_template('remove-song.html')
+
+@app.post('/submit-song-remove')
+def submit_song_remove():
+  remove = dict(request.form)
+  remove = remove['name']
+  run(f'DELETE FROM songs WHERE songs.name = "{remove}"')
+  return redirect('/')
 
 if __name__ == '__main__':
   app.run(debug=True)

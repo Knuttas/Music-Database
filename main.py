@@ -145,37 +145,3 @@ run('''
     (NULL, 'Pendulous Skin', 306, 9)
 ''')
 """
-"""
-# example using input from terminal to get users from database
-search_name = input('Search by name: ')
-
-# use the input string with the query to filter with LIKE
-# note: the way this works will replaced 
-users_by_name = get('''
-  SELECT * FROM users WHERE name LIKE :search
-''', 
-  { 'search': f'%{search_name}%' }
-)
-
-for user in users_by_name:
-  print(user['name'])
-
-
-# create user from a dict
-user = {
-  'name': 'Loke',
-  'age': 7
-}
-
-# insert with the dict and get the autoincremented 'id'
-insert_result = run('INSERT INTO users VALUES(NULL, :name, :age)', user)
-
-print(insert_result)
-
-users = get('''
-  SELECT * FROM users
-''')
-
-for user in users:
-  print(user['name'])
-"""
